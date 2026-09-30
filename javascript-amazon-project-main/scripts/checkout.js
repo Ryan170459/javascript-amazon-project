@@ -1,6 +1,7 @@
-import { cart, saveToStorage } from '../data/cart.js';
+import { cart, saveToStorage, removeFromCart } from '../data/cart.js';
 import { products } from '../data/products.js';
 import { formatCurrency } from './utils/money.js';
+
 
 // Delivery options
 const deliveryOptions = [
@@ -146,7 +147,7 @@ function renderOrderSummary() {
                 Update
               </span>
 
-              <span class="delete-quantity-link link-primary">
+              <span class="delete-quantity-link link-primary js-delete-link" data-product-id="${matchingProduct.id}">
                 Delete
               </span>
 
@@ -289,3 +290,16 @@ document.addEventListener('change', (event) => {
   // Re-render the checkout page
   renderOrderSummary();
 });
+
+document.querySelectorAll('.js-delete-link')
+  .forEach((link) => {
+
+    link.addEventListener('click', () => {
+
+      // Get the product ID from the data-product-id attribute
+      const productId = link.dataset.productId;
+
+      removeFromCart(productId);
+      
+    });
+  });
