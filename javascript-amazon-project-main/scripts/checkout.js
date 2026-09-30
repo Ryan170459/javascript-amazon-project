@@ -104,7 +104,7 @@ function renderOrderSummary() {
 
     // Create the HTML for this cart item
     cartSummary += `
-      <div class="cart-item-container">
+      <div class="cart-item-container js-cart-item-container-${matchingProduct.id}">
 
         <!-- Display the selected delivery date -->
         <div class="delivery-date">
@@ -298,8 +298,11 @@ document.querySelectorAll('.js-delete-link')
 
       // Get the product ID from the data-product-id attribute
       const productId = link.dataset.productId;
-
       removeFromCart(productId);
-      
+
+      const container=document.querySelector(
+        `.js-cart-item-container-${productId}`
+      );
+      container.remove();
     });
   });
