@@ -1,26 +1,18 @@
 import { cart, saveToStorage, removeFromCart } from '../data/cart.js';
 import { products } from '../data/products.js';
 import { formatCurrency } from './utils/money.js';
+import { hello } from 'https://unpkg.com/supersimpledev@1.0.1/hello.esm.js';
+import dayjs from 'https://unpkg.com/supersimpledev@8.5.0/dayjs/esm/index.js';
+import { deliveryOptions } from '../data/deliveryOptions.js';
+
+hello();
 
 
-// Delivery options
-const deliveryOptions = [
-  {
-    id: '1',
-    deliveryDays: 7,
-    priceCents: 0
-  },
-  {
-    id: '2',
-    deliveryDays: 3,
-    priceCents: 499
-  },
-  {
-    id: '3',
-    deliveryDays: 1,
-    priceCents: 999
-  }
-];
+// Test Day.js
+const today = dayjs();
+const deliveryDate = today.add(7, 'days');
+
+console.log(deliveryDate.format('dddd, MMMM, D'));
 
 
 // Function to calculate the delivery date
@@ -106,7 +98,6 @@ function renderOrderSummary() {
     cartSummary += `
       <div class="cart-item-container js-cart-item-container-${matchingProduct.id}">
 
-        <!-- Display the selected delivery date -->
         <div class="delivery-date">
           Delivery date: ${deliveryDate}
         </div>
@@ -114,26 +105,22 @@ function renderOrderSummary() {
 
         <div class="cart-item-details-grid">
 
-          <!-- Product image -->
           <img class="product-image"
             src="${matchingProduct.image}">
 
 
           <div class="cart-item-details">
 
-            <!-- Product name -->
             <div class="product-name">
               ${matchingProduct.name}
             </div>
 
 
-            <!-- Product price -->
             <div class="product-price">
               $${formatCurrency(matchingProduct.priceCents)}
             </div>
 
 
-            <!-- Quantity -->
             <div class="product-quantity">
 
               <span>
@@ -147,7 +134,9 @@ function renderOrderSummary() {
                 Update
               </span>
 
-              <span class="delete-quantity-link link-primary js-delete-link" data-product-id="${matchingProduct.id}">
+              <span
+                class="delete-quantity-link link-primary js-delete-link"
+                data-product-id="${matchingProduct.id}">
                 Delete
               </span>
 
@@ -158,18 +147,13 @@ function renderOrderSummary() {
         </div>
 
 
-        <!-- Delivery options -->
         <div class="delivery-options">
 
           <div class="delivery-options-title">
             Choose a delivery option:
           </div>
 
-
-          ${deliveryOptionsHTML(
-            cartItem,
-            cartIndex
-          )}
+          ${deliveryOptionsHTML(cartItem, cartIndex)}
 
         </div>
 
@@ -213,10 +197,14 @@ function deliveryOptionsHTML(cartItem, cartIndex) {
     let shippingPrice = '';
 
     if (option.priceCents === 0) {
+
       shippingPrice = 'FREE Shipping';
+
     } else {
+
       shippingPrice =
         `$${formatCurrency(option.priceCents)} - Shipping`;
+
     }
 
 
@@ -289,20 +277,29 @@ document.addEventListener('change', (event) => {
 
   // Re-render the checkout page
   renderOrderSummary();
+
 });
 
-document.querySelectorAll('.js-delete-link')
-  .forEach((link) => {
 
-    link.addEventListener('click', () => {
+// Listen for clicks on the Delete buttons
+document.addEventListener('click', (event) => {
 
-      // Get the product ID from the data-product-id attribute
-      const productId = link.dataset.productId;
-      removeFromCart(productId);
+  // Check if the clicked element is a Delete button
+  if (!event.target.classList.contains('js-delete-link')) {
+    return;
+  }
 
-      const container=document.querySelector(
-        `.js-cart-item-container-${productId}`
-      );
-      container.remove();
-    });
-  });
+
+  // Get the product ID
+  const productId =
+    event.target.dataset.productId;
+
+
+  // Remove the product from the cart
+  removeFromCart(productId);
+
+
+  // Re-render the checkout page
+  renderOrderSummary();
+
+});
